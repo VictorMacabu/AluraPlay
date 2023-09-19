@@ -1,0 +1,30 @@
+<?php
+
+namespace Alura\Mvc\Controller;
+
+use Alura\Mvc\Entity\User;
+use Alura\Mvc\Repository\UserRepository;
+
+class LoginController implements Controller
+{
+
+    public function __construct(private UserRepository $userRepository)
+    {
+    }
+
+    public function processaRequisicao(): void
+    {
+        $email = filter_input(INPUT_POST,'email', FILTER_VALIDATE_EMAIL);
+        $password = filter_input(INPUT_POST, 'password');
+
+        $userData = $this->userRepository->find($email);
+        $correctPassword = password_verify($password, $userData['password'] ?? '');
+
+        if ($correctPassword) {
+            header('Location: /');
+        } else {
+            header('Location: /login?sucesso=0');
+        }
+
+    }
+}
